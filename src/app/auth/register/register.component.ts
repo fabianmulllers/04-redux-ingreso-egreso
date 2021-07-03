@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -7,10 +11,55 @@ import { Component, OnInit } from '@angular/core';
   ]
 })
 export class RegisterComponent implements OnInit {
+  
+  miFormulario: FormGroup = this.fb.group({
+    nombre: ['',Validators.required],
+    correo: ['',[Validators.required, Validators.email] ],
+    password: ['',Validators.required],
 
-  constructor() { }
+  })
+
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
+  }
+  
+  miCampoValido( campo: string ){
+    return this.miFormulario.get( campo )?.valid &&
+    this.miFormulario.get( campo )?.statusChanges
+  }
+
+  crearUsuario(){
+    if(this.miFormulario.invalid){ return }
+    
+    Swal.fire({
+      title: 'Espere por favor',
+      didOpen: () => {
+        Swal.showLoading()
+      },
+    });
+
+    const { nombre, correo, password }  = this.miFormulario.value  
+
+    this.authService.crearUsuario( nombre, correo, password)
+      .then( credenciales => {
+        console.log( credenciales );
+        Swal.close();
+        this.router.navigateByUrl('/dashboard')
+      })
+      .catch( err => {
+        Swal.fire({
+          title: 'Error!',
+          text: err.message,
+          icon: 'error',
+          confirmButtonText: 'Cerrar'
+        })
+      });
+
   }
 
 }

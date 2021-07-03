@@ -5,14 +5,26 @@
         <div class="col-lg-4 mx-auto">
             <h2 class="text-center mb-4" style="color: white;">Ingresar</h2>
             <div class="auto-form-wrapper">
-            <form action="#">
+
+            <form [formGroup]="loginForm" (ngSubmit)="validarUsuario()">
+
                 <div class="form-group">
-                <label class="label">Usuario</label>
+                <label class="label">Email</label>
                 <div class="input-group">
-                    <input type="email" class="form-control" placeholder="Email">
+                    <input 
+                        type="email" 
+                        class="form-control"
+                        placeholder="Email"
+                        formControlName="email">
+
+
                     <div class="input-group-append">
                     <span class="input-group-text">
-                        <i class="fa fa-check-circle"></i>
+                        <!-- si es valido -->
+
+                        <i 
+                            class="fa fa-check-circle"
+                            *ngIf="campoValido('email')"></i>
                     </span>
                     </div>
                 </div>
@@ -20,26 +32,36 @@
                 <div class="form-group">
                 <label class="label">Contraseña</label>
                 <div class="input-group">
-                    <input type="password" class="form-control" placeholder="*********">
+                    <input 
+                        type="password" 
+                        class="form-control" 
+                        placeholder="*********"
+                        formControlName="password">
                     <div class="input-group-append">
                     <span class="input-group-text">
-                        <i class="fa fa-check-circle"></i>
+                        <!-- si es valido -->
+                        <i 
+                            class="fa fa-check-circle"
+                            *ngIf="campoValido('email')"></i>
+                    
                     </span>
                     </div>
                 </div>
                 </div>
                 <div class="form-group">
-                <button class="btn btn-primary submit-btn btn-block">Login</button>
+                <button type="submit" class="btn btn-primary submit-btn btn-block">Login</button>
                 </div>
                 
                 
                 <div class="text-block text-center my-3">
                 <span class="text-small font-weight-semibold">No estas registrado? </span>
                 <br>
-                <a href="" class="text-black text-small">Crear una cuenta</a>
+                <a href="#" routerLink="/register" class="text-black text-small">Crear una cuenta</a>
                 </div>
+           
             </form>
-            </div>
+           
+        </div>
             
             
         </div>
