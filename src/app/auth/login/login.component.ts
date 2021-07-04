@@ -1,11 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { catchError } from 'rxjs/operators'
-import { of, EMPTY } from 'rxjs';
-import { AjaxError } from 'rxjs/ajax'
+
+// alert
 import Swal from 'sweetalert2';
+
+//reducer
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/app.reducer';
+
+// observer
+import { of, EMPTY, Subscription } from 'rxjs';
+import { catchError } from 'rxjs/operators'
+import { AjaxError } from 'rxjs/ajax'
+import * as ui from '../../shared/ui.actions';
 
 @Component({
   selector: 'app-login',
@@ -13,21 +22,37 @@ import Swal from 'sweetalert2';
   styles: [
   ]
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   
   loginForm: FormGroup = this.fb.group({
-    email: ['',[Validators.email, Validators.required]],
-    password: ['',[ Validators.required]],
+    email: ['fabian@fabian.cl',[Validators.email, Validators.required]],
+    password: ['123456',[ Validators.required]],
 
   })
+  
+  cargando: boolean = false;
+  uiSubscription!: Subscription;
 
   constructor(
     private fb: FormBuilder,
     private authService:AuthService,
+    private store: Store<AppState>,
     private router:Router
   ) { }
 
+  
   ngOnInit(): void {
+    
+    this.uiSubscription = this.store.select('ui')
+    .subscribe( ui => {
+      this.cargando = ui.isLoading;
+      console.log( 'cargando subs' );
+    });
+    
+  }
+  
+  ngOnDestroy(): void {
+    this.uiSubscription.unsubscribe();
   }
 
   campoValido( campo: string){
@@ -37,14 +62,15 @@ export class LoginComponent implements OnInit {
 
   validarUsuario(){
     if( this.loginForm.invalid ){ return }
-    
+      
+    this.store.dispatch( ui.isLoading() )
 
-      Swal.fire({
-        title: 'Espere por favor',
-        didOpen: () => {
-          Swal.showLoading()
-        },
-      });
+    // Swal.fire({
+    //   title: 'Espere por favor',
+    //   didOpen: () => {
+    //     Swal.showLoading()
+    //   },
+    // });
 
     
     // promesa
@@ -53,10 +79,14 @@ export class LoginComponent implements OnInit {
     this.authService.loginUsuario( email, password)
       .then( resp => {
         console.log( resp )
-        Swal.close();
+        // Swal.close();
+        this.store.dispatch( ui.stopLoading() )
         this.router.navigateByUrl('/dashboard')
       })
       .catch( err => {
+
+          this.store.dispatch( ui.stopLoading() )
+
           Swal.fire({
             title: 'Error!',
             text: err.message,
