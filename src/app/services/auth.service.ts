@@ -9,7 +9,7 @@ import { map, tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import * as authAction from '../auth/auth.actions';
 import { Usuario } from '../modelos/usuario.model';
-import { unSetItems } from '../ingreso-egreso/ingreso-egreso.action';
+// import { unSetItems } from '../ingreso-egreso/ingreso-egreso.action';
 
 @Injectable({
   providedIn: 'root'
@@ -52,7 +52,7 @@ export class AuthService {
           this.userSubscription.unsubscribe();
           this._user = null;
         }
-        this.store.dispatch( unSetItems() );
+        // this.store.dispatch( unSetItems() );
         this.store.dispatch( authAction.unSetUser() );
 
       }

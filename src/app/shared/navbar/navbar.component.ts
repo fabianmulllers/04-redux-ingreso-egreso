@@ -20,7 +20,7 @@ export class NavbarComponent implements OnInit, OnDestroy{
 
   ngOnInit(): void {
 
-    this.store.select( 'user' )
+    this.userSubs = this.store.select( 'user' )
     .subscribe(( ({user}) => this.nombre = user.nombre ))
 
   }
